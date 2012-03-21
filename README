@@ -4,6 +4,13 @@ Venture is a simple adventure-game engine written in Python using the Django fra
 
 Installation instructions:
 - Download and install Django 1.3 from the website (djangoproject.com) or through pip (sudo pip install django)
-- Add "venture" to the app string in your project's settings.py file. Also make sure it points to a working database file or URL.
-- Go to localhost:8000 and begin the game.
+- Add "venture" to the installed_apps tuple in your project's settings.py file.
+- Set up your database, also in settings.py
+- Add venture.urls to your project urlconf. This is the urlpatterns tuple in your urls.py file. The line should look like:
+from django.conf.urls.defaults import patterns, include, url
 
+urlpatterns = pattern(
+    # ...
+    url(r'^$', include('venture.urls')),
+    # ...
+)
