@@ -1,0 +1,9 @@
+Venture Readme:
+
+Venture is a simple adventure-game engine written in Python using the Django framework. It is designed to accomodate multiple players who cooperate or play solo interacting with NPCs, items and rooms/environments.
+
+Installation instructions:
+- Download and install Django 1.3 from the website (djangoproject.com) or through pip (sudo pip install django)
+- Add "venture" to the app string in your project's settings.py file. Also make sure it points to a working database file or URL.
+- Go to localhost:8000 and begin the game.
+
