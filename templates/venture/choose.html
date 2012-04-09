@@ -1,0 +1,24 @@
+<html>
+<head>
+<title>Character Select>/title>
+</head>
+<body>
+<form name="chooseform" id="chooseform" action="/choose/" method="POST">
+{% csrf_token %}
+{% if user.persons.all %}
+<p>
+<label for="charselect">Choose your Character:</label>
+<select name="pid" id="pid">
+{% for char in user.persons.all %}
+<option value="{{ char.id }}">{{ char.name }}</option>
+{% endfor %}
+</select>
+{% endif %}
+<h1>Create a New Character</h1>
+<p>
+<label for="name">Character Name:</label>
+<input type="text" name="name" id="name" value="" />
+<input type="submit" value="Start Game" />
+</form>
+</body>
+</html>

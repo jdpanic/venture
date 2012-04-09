@@ -1,0 +1,15 @@
+In-game terminology:
+Person: player or NPC, represented by the Person model
+ If a person's user foreign key == NULL, that Person is an NPC.
+ NPC: Gives out quests somehow.
+Item: Object in the game (wand, cookie, chair). Belongs to a room and one or optionaly many persons. Belongs to and has many quests.
+ non-static: Belongs to one person only.
+ static: Belongs to many users. Users who don't have the item can find it in its originating room.
+Room: Contains persons, items
+Money: in-came currency gained from completing quests, gained from other users.
+
+Quests:
+These are missions involving the collection of one or more items by the user. I am thinking that most of these items should be static so that multiple players can go on the same quests.
+The user goes on a quest by clicking "Quests" at the bottom of the page and choosing one from the list. If they can afford it it is added to their list of quests. The quest is complete when all necessary items have been collected in the user's inventory (Person.items)
+Quests have a time limit. If this limit is exceeded the quest is lost.
+When a quest is lost the user can choose it again from the quests menu. They will have to pay quest.cost again.
