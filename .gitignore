@@ -1,0 +1,3 @@
+#Python bytecode, standard and optimized
+*.pyc
+*.pyo
