@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 class Person(models.Model):
- """ This model represents all characters (players and NPCs) in the game. """
+ """
+ Structure to represent all characters (players and NPCs) in the game.
+ """
  name = models.CharField(max_length=50, unique=True)
  user = models.ForeignKey(User, null=True) # If it's null this person is an NPC
  alive = models.BooleanField(default=True) # alive on creation
@@ -11,45 +13,73 @@ class Person(models.Model):
  money = models.IntegerField(default=0) # in-game currency
  items = models.ManyToManyField('Item')
  quests = models.ManyToManyField('Quest') # Each person can be on many quests at once
+ 
  def __unicode__(self):
   return self.name
 
- def take(self, what): # take an item
-  if what.room == self.room and self.items.objects.get(pk=what.id) is None:
-   self.items.add(what)
-   if not what.static:
-    what.visible = False # No one else can see or take this item
+ def take(self, item):
+ """
+ Defines behavior for taking an item.
+ Items can only be taken if they are in the same room as the player and
+ if the player doesn't already have this item in their inventory. 
+ """
+  if item.room == self.room and self.items.objects.get(pk=item.id) is None:
+   self.items.add(item)
+   if not item.static:
+    item.visible = False # No one else can see or take this item
+   
    # check to see if this item is in any quests.
+   # FLAG-DAN Is this check to see if the player has completed a quest? -
+    # what other logic should be implemented here?
    for q in self.quests:
     try:
-     obj = q.items.objects.get(pk=what.id)
+     obj = q.items.objects.get(pk=item.id)
      
     except:
+     #FIXME
      pass
     
-   return "You are now carrying " + what.name
+   return "You are now carrying " + item.name
+  
   else:
+  # FLAG-DAN Consider returning a string stating that this item couldn't be taken
+   # and possibly raising a flag to alert the admin of an error in the case that
+   # the item isn't in this room (this implies that an item is visible when it shouldn't be)
    return None
 
 class Room(models.Model):
- description = models.TextField()  # You are in the drawing room. Burning fires are everywhere.
- name = models.CharField(max_length=50, unique=True) # Drawing Room
- exits = models.ManyToManyField('self', through='Exit', symmetrical=False)
+"""
+Defines room attributes.
+"""
+ description = models.TextField()  # Description of the room - visible to the player
+ name = models.CharField(max_length=50, unique=True) # Room name
+ exits = models.ManyToManyField('self', through='Exit', symmetrical=False) #Exits from a room
  def __unicode__(self):
   return self.name
   
 class Exit(models.Model): 
+"""
+Exits and entrances available within each room.
+"""
  from_room = models.ForeignKey(Room, related_name="exit")
  to_room = models.ForeignKey(Room, related_name="entrance")
- description = models.TextField() # A spiral staircase leads to _
+ description = models.TextField() # Description of the path leading out from this exit
  locked = models.BooleanField(default=False)
  key_item = models.ForeignKey('Item', help_text="If locked is True, the player needs this item to get through the exit.")
- transition_message = models.TextField( blank=True, help_text="You step through the door.")
+ 
+ #FLAG-DAN consider having a short name variable that we can replace 'door' with
+ transition_message = models.TextField( blank=True, help_text="You step through the door.") 
+ 
  def __unicode__(self):
   return "from " + self.from_room + " to " + self.to_room
 
 class Item(models.Model):
- name = models.CharField(max_length=50, unique=True) # Chrystal Ball
+"""
+Defines item attributes.
+"""
+ #FLAG_DAN could we implement logic that allows some items to alter the player's attributes?
+ # This would require modifying the player class - possibly adding some characteristics (hats?)
+ name = models.CharField(max_length=50, unique=True) # Item name
  description = models.TextField(blank=True, null=True, help_text="Description as seen in person's inventory.")
  inroom_description = models.TextField(blank=True, null=True, help_text="Optional item description in a room e.g. you see a shiny jewel here.")
  room = models.ForeignKey(Room, help_text="Where can this item be found?")
@@ -58,9 +88,12 @@ class Item(models.Model):
   return self.name
 
 class Quest(models.Model):
+"""
+Defines quest behavior
+"""
  name = models.CharField(max_length=50, unique=True)
  description = models.TextField()
- items = models.ManyToManyField(Item)
+ items = models.ManyToManyField(Item) # Items required to complete the quest
  time_limit = models.IntegerField(default=0, help_text="How long in seconds does player have to complete the quest? 0 = unlimited")
  cost = models.IntegerField(default=0) # how much does it cost to go on this quest?
  payout = models.IntegerField(default=0) # How much do you earn from completing the quest?
