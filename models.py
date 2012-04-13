@@ -18,39 +18,49 @@ class Person(models.Model):
   return self.name
 
  def take(self, item):
- """
+  """
  Defines behavior for taking an item.
  Items can only be taken if they are in the same room as the player and
  if the player doesn't already have this item in their inventory. 
- """
-  if item.room == self.room and self.items.objects.get(pk=item.id) is None:
+  """
+  if item.room == self.room:
    self.items.add(item)
    if not item.static:
     item.visible = False # No one else can see or take this item
-   
-   # check to see if this item is in any quests.
-   # FLAG-DAN Is this check to see if the player has completed a quest? -
-    # what other logic should be implemented here?
-   for q in self.quests:
-    try:
-     obj = q.items.objects.get(pk=item.id)
-     
-    except:
-     #FIXME
-     pass
+    item.save()
     
-   return "You are now carrying " + item.name
+   message = "You are now carrying " + item.name + ".\n"
+   # Check all quests to see which ones have been completed etc.
+   message += self._checkquests()
+   
+   return message
   
   else:
   # FLAG-DAN Consider returning a string stating that this item couldn't be taken
    # and possibly raising a flag to alert the admin of an error in the case that
    # the item isn't in this room (this implies that an item is visible when it shouldn't be)
-   return None
-
+   return "You can't carry that."
+ 
+ def _checkquests(self):
+  message = "" # String which will contain all of our quest-related messages
+  for q in self.quests:
+   itemcount = 0 # this will count up items in each quest below. It will be reset each iteration.
+   for i in self.items:
+    try:
+     obj = q.items.objects.get(pk=i.id)
+     itemcount += 1
+     if itemcount >= q.items.count():
+      message += "You've completed " + q.name + "!\n"
+      break
+    except:
+     pass # what else should be done here?
+     
+  return message
+ 
 class Room(models.Model):
-"""
+ """
 Defines room attributes.
-"""
+ """
  description = models.TextField()  # Description of the room - visible to the player
  name = models.CharField(max_length=50, unique=True) # Room name
  exits = models.ManyToManyField('self', through='Exit', symmetrical=False) #Exits from a room
@@ -58,9 +68,9 @@ Defines room attributes.
   return self.name
   
 class Exit(models.Model): 
-"""
+ """
 Exits and entrances available within each room.
-"""
+ """
  from_room = models.ForeignKey(Room, related_name="exit")
  to_room = models.ForeignKey(Room, related_name="entrance")
  description = models.TextField() # Description of the path leading out from this exit
@@ -68,15 +78,15 @@ Exits and entrances available within each room.
  key_item = models.ForeignKey('Item', help_text="If locked is True, the player needs this item to get through the exit.")
  
  #FLAG-DAN consider having a short name variable that we can replace 'door' with
- transition_message = models.TextField( blank=True, help_text="You step through the door.") 
+ transition_message = models.TextField( blank=True, help_text="Descriptive message i.e. you step through the door.") 
  
  def __unicode__(self):
   return "from " + self.from_room + " to " + self.to_room
 
 class Item(models.Model):
-"""
+ """
 Defines item attributes.
-"""
+ """
  #FLAG_DAN could we implement logic that allows some items to alter the player's attributes?
  # This would require modifying the player class - possibly adding some characteristics (hats?)
  name = models.CharField(max_length=50, unique=True) # Item name
@@ -88,9 +98,9 @@ Defines item attributes.
   return self.name
 
 class Quest(models.Model):
-"""
+ """
 Defines quest behavior
-"""
+ """
  name = models.CharField(max_length=50, unique=True)
  description = models.TextField()
  items = models.ManyToManyField(Item) # Items required to complete the quest

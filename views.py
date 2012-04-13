@@ -8,35 +8,38 @@ from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 
 def login(request):
- u = auth.authenticate(request.POST['username'], request.POST['pwd'])
- if u:
-  if u.is_active:
-   auth.login(request, u)
-   return render_to_response('venture/choose.html')
+ if request.POST:
+  u = auth.authenticate(username=request.POST['username'], password=request.POST['pwd'])
+  if u:
+   if u.is_active:
+    auth.login(request, u)
+    return render_to_response('venture/choose.html', context_instance=RequestContext(request))
+   else:
+    return render_to_response('venture/banned.html')
   else:
-   return render_to_response('venture/banned.html')
- else:
-  messages.warning(request, "The username/password combination  is invalid.")
-  return HttpResponseRedirect(reverse('venture.views.main'))
+   messages.warning(request, "The username/password combination  is invalid.")
+   return HttpResponseRedirect(reverse('venture.views.login'))
+ 
+ return render_to_response('venture/login.html', context_instance=RequestContext(request))
 
 @login_required
 def choose(request):
  if request.POST:
-  if request.POST['pid']:
+  if 'pid' in request.POST:
    me = Person.objects.get(pk=request.POST['pid'])
-  elif request.POST['name']: # if there's no pid or if that pid is invalid we try and create someone
+  elif 'name' in request.POST:
    me = Person()
    me.name = request.POST['name']
    me.room = Room.objects.get(name='Home Room') # ghetto
    me.user = request.user
-   me.save()
   
   me.alive = True
+  me.save()
   request.session['p_id'] = me.id
   request.session.set_expiry(0) # expires when the browser closes
-  return HttpResponseRedirect(reverse('venture.views.game'))
+  return render_to_response('venture/game.html', {'me': me}, context_instance=RequestContext(request))
  
- return render_to_response("venture/choose.html")
+ return render_to_response('venture/choose.html', context_instance=RequestContext(request))
  
 @login_required
 def game(request):
@@ -53,10 +56,7 @@ def action(request):
  act = request.POST['do_what']
  if act=="take":
   obj = get_object_or_404(Item.objects, pk=request.POST['on_what'])
-  if me.take(obj):
-   messages.success(request, "You are now carrying " + obj.name)
-  else:
-   messages.warning(request, "You can't carry " + obj.name)
+  messages.success(me.take(obj))
  elif act=="go":
   obj = get_object_or_404(Exit.objects, pk=request.POST['on_what'])
   if not obj.locked:
@@ -77,10 +77,12 @@ def main(request):
  return render_to_response("venture/login.html", context_instance=RequestContext(request))
  
 def quit(request):
- me = Person.objects.get(pk=request.session['p_id'])
- me.alive = False
- me.save()
+ if 'p_id' in request.session:
+  me = Person.objects.get(pk=request.session['p_id'])
+  me.alive = False
+  me.save()
+ 
  request.session['p_id'] = '0'
- auth.logout(request, me.user)
+ auth.logout(request)
  return render_to_response("venture/quit.html")
  

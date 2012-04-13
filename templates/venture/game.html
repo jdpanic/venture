@@ -31,7 +31,7 @@ frm.submit();
 {% endfor %}
 </p>
 <p>
-{% for p in me.room.persons_set.all %}
+{% for p in me.room.person_set.all %}
 {% if p.alive %}
 {{ p.name }} is here.
 {% else %}

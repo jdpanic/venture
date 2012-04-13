@@ -1,15 +1,15 @@
 <html>
 <head>
-<title>Character Select>/title>
+<title>Character Select</title>
 </head>
 <body>
 <form name="chooseform" id="chooseform" action="/choose/" method="POST">
 {% csrf_token %}
-{% if user.persons.all %}
+{% if user.person_set %}
 <p>
 <label for="charselect">Choose your Character:</label>
 <select name="pid" id="pid">
-{% for char in user.persons.all %}
+{% for char in user.person_set.all %}
 <option value="{{ char.id }}">{{ char.name }}</option>
 {% endfor %}
 </select>
