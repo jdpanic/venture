@@ -6,5 +6,6 @@ urlpatterns = patterns("",
     url(r'^quit/$', 'venture.views.quit'),
     url(r'^choose/$', 'venture.views.choose'),
     url(r'^login/$', 'venture.views.login'),
+    url(r'^quests/$', 'venture.views.quests'),
     # url(r'^$', 'venture.views.login'),
 )

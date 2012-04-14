@@ -25,9 +25,9 @@ class Person(models.Model):
   """
   if item.room == self.room:
    self.items.add(item)
-   if not item.static:
-    item.visible = False # No one else can see or take this item
-    item.save()
+   # if not item.static:
+   # item.visible = False # No one else can see or take this item
+   # item.save()
     
    message = "You are now carrying " + item.name + ".\n"
    # Check all quests to see which ones have been completed etc.
@@ -43,20 +43,35 @@ class Person(models.Model):
  
  def _checkquests(self):
   message = "" # String which will contain all of our quest-related messages
-  for q in self.quests:
+  for q in self.quests.all():
    itemcount = 0 # this will count up items in each quest below. It will be reset each iteration.
-   for i in self.items:
+   for i in self.items.all():
     try:
      obj = q.items.objects.get(pk=i.id)
      itemcount += 1
      if itemcount >= q.items.count():
       message += "You've completed " + q.name + "!\n"
+      self.quests.remove(q)
       break
     except:
      pass # what else should be done here?
      
   return message
  
+ def spend(self, amount):
+  """ Decreases the player's money. Makes sure it doesn't go under 0. """
+  self.money -= amount
+  if self.money < 0:
+   self.money += amount
+   return False # can't afford to pay
+  
+  return True
+ 
+ def earn(self, amount):
+  """ Increases player's money bo amount. Here for consistancy with spend. """
+  self.money += amount
+  return True
+  
 class Room(models.Model):
  """
 Defines room attributes.
@@ -75,13 +90,13 @@ Exits and entrances available within each room.
  to_room = models.ForeignKey(Room, related_name="entrance")
  description = models.TextField() # Description of the path leading out from this exit
  locked = models.BooleanField(default=False)
- key_item = models.ForeignKey('Item', help_text="If locked is True, the player needs this item to get through the exit.")
+ key_item = models.ForeignKey('Item', null=True, help_text="If locked is True, the player needs this item to get through the exit.")
  
  #FLAG-DAN consider having a short name variable that we can replace 'door' with
  transition_message = models.TextField( blank=True, help_text="Descriptive message i.e. you step through the door.") 
  
  def __unicode__(self):
-  return "from " + self.from_room + " to " + self.to_room
+  return "from " + self.from_room.name + " to " + self.to_room.name
 
 class Item(models.Model):
  """

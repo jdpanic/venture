@@ -1,0 +1,19 @@
+<!-- This view will be replaced once we figure out a way to do quests smoothly in-game. -->
+<html>
+<head>
+<title>Quest Select</title>
+</head>
+<body>
+<form name="questform" id="questform" action="/action/" method="POST">
+{% csrf_token %}
+<input type="hidden" id="do_what" name="do_what" value="quest" />
+<label for="on_what">Select a Quest:</label>
+<select id="on_what" name="on_what">
+{% for q in quests %}
+<option value="{{ q.id }}">{{ q.name }}</option>
+{% endfor %}
+</select>
+<input type="submit" />
+</form>
+</body>
+</html>

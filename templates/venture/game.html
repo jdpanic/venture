@@ -32,7 +32,7 @@ frm.submit();
 </p>
 <p>
 {% for p in me.room.person_set.all %}
-{% if p.alive %}
+{% if p.alive and p != me %}
 {{ p.name }} is here.
 {% else %}
 <a href="javascript:DoAction('scan', {{ p.id }});">{{ p.name }}'s corpse is here.</a>
@@ -47,13 +47,13 @@ frm.submit();
 </p>
 <p> You are carying:
 <ul>
-{% for it in me.item_set.all %}
+{% for it in me.items.all %}
 <li><a href="javascript:DoAction('use', {{ it.id }});">{{ it.name }}</a></li>
 {% empty %}
 Nothing.
 {% endfor %}
 </ul>
 </p></form>
-<h6> {{ me.name }}: <a href="/quit/">Quit</a></h6>
+<h6> {{ me.name }}: <a href="/quests/">Quest</a> | <a href="/quit/">Quit</a> | <a href="/logout/">Logout</a></h6>
 </body>
 </html>

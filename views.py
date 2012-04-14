@@ -2,7 +2,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
-from venture.models import Item, Room, Person, Exit
+from venture.models import Item, Room, Person, Exit, Quest
 from django.template import RequestContext
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
@@ -32,6 +32,7 @@ def choose(request):
    me.name = request.POST['name']
    me.room = Room.objects.get(name='Home Room') # ghetto
    me.user = request.user
+   me.money = 500
   
   me.alive = True
   me.save()
@@ -51,12 +52,16 @@ def game(request):
  return render_to_response('venture/game.html', {'me': me}, context_instance=RequestContext(request))
 
 @login_required
+def quests(request):
+ return render_to_response("venture/quests.html", {'quests': Quest.objects.all()}, context_instance=RequestContext(request))
+
+@login_required
 def action(request):
  me = Person.objects.get(pk=request.session['p_id'])
  act = request.POST['do_what']
  if act=="take":
   obj = get_object_or_404(Item.objects, pk=request.POST['on_what'])
-  messages.success(me.take(obj))
+  messages.success(request, me.take(obj))
  elif act=="go":
   obj = get_object_or_404(Exit.objects, pk=request.POST['on_what'])
   if not obj.locked:
@@ -66,10 +71,13 @@ def action(request):
   else:
    messages.warning(request, "LOCKED")
  elif act == "quest":
-  q = get_object_or_404(Quest.objects, pk=request.post["on_what"])
-  if q not in me.quests:
+  q = get_object_or_404(Quest.objects, pk=request.POST["on_what"])
+  if me.spend(q.cost):
    me.quests.add(q)
+   me.save()
    messages.success(request, q.description)
+  else:
+   messages.warning(request, "You can't afford that quest.")
  
  return HttpResponseRedirect(reverse('venture.views.game'))
 
