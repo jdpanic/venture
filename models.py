@@ -19,9 +19,9 @@ class Person(models.Model):
 
  def take(self, item):
   """
- Defines behavior for taking an item.
- Items can only be taken if they are in the same room as the player and
- if the player doesn't already have this item in their inventory. 
+  Defines behavior for taking an item.
+  Items can only be taken if they are in the same room as the player and
+  if the player doesn't already have this item in their inventory. 
   """
   if item.room == self.room:
    self.items.add(item)
@@ -74,7 +74,7 @@ class Person(models.Model):
   
 class Room(models.Model):
  """
-Defines room attributes.
+ Defines room attributes.
  """
  description = models.TextField()  # Description of the room - visible to the player
  name = models.CharField(max_length=50, unique=True) # Room name
@@ -84,7 +84,7 @@ Defines room attributes.
   
 class Exit(models.Model): 
  """
-Exits and entrances available within each room.
+ Exits and entrances available within each room.
  """
  from_room = models.ForeignKey(Room, related_name="exit")
  to_room = models.ForeignKey(Room, related_name="entrance")
@@ -100,7 +100,7 @@ Exits and entrances available within each room.
 
 class Item(models.Model):
  """
-Defines item attributes.
+ Defines item attributes.
  """
  #FLAG_DAN could we implement logic that allows some items to alter the player's attributes?
  # This would require modifying the player class - possibly adding some characteristics (hats?)
@@ -114,7 +114,7 @@ Defines item attributes.
 
 class Quest(models.Model):
  """
-Defines quest behavior
+ Defines quest behavior
  """
  name = models.CharField(max_length=50, unique=True)
  description = models.TextField()
