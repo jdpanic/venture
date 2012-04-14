@@ -32,8 +32,10 @@ frm.submit();
 </p>
 <p>
 {% for p in me.room.person_set.all %}
-{% if p.alive and p != me %}
+{% if p.alive %}
+{% if p != me %}
 {{ p.name }} is here.
+{% endif %}
 {% else %}
 <a href="javascript:DoAction('scan', {{ p.id }});">{{ p.name }}'s corpse is here.</a>
 {% endif %}
