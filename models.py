@@ -9,10 +9,10 @@ class Person(models.Model):
  name = models.CharField(max_length=50, unique=True)
  user = models.ForeignKey(User, null=True) # If it's null this person is an NPC
  alive = models.BooleanField(default=True) # alive on creation
- room = models.ForeignKey('Room') # where am i?
+ room = models.ForeignKey('Room', blank=True) # where am i?
  money = models.IntegerField(default=0) # in-game currency
- items = models.ManyToManyField('Item')
- quests = models.ManyToManyField('Quest') # Each person can be on many quests at once
+ items = models.ManyToManyField('Item', blank=True)
+ quests = models.ManyToManyField('Quest', blank=True) # Each person can be on many quests at once
  
  def __unicode__(self):
   return self.name
@@ -78,7 +78,7 @@ class Room(models.Model):
  """
  description = models.TextField()  # Description of the room - visible to the player
  name = models.CharField(max_length=50, unique=True) # Room name
- exits = models.ManyToManyField('self', through='Exit', symmetrical=False) #Exits from a room
+ exits = models.ManyToManyField('self', through='Exit', symmetrical=False, blank=True) #Exits from a room
  def __unicode__(self):
   return self.name
   
@@ -90,7 +90,7 @@ class Exit(models.Model):
  to_room = models.ForeignKey(Room, related_name="entrance")
  description = models.TextField() # Description of the path leading out from this exit
  locked = models.BooleanField(default=False)
- key_item = models.ForeignKey('Item', null=True, help_text="If locked is True, the player needs this item to get through the exit.")
+ key_item = models.ForeignKey('Item', null=True, help_text="If locked is True, the player needs this item to get through the exit.", blank=True)
  
  #FLAG-DAN consider having a short name variable that we can replace 'door' with
  transition_message = models.TextField( blank=True, help_text="Descriptive message i.e. you step through the door.") 

@@ -27,7 +27,9 @@ frm.submit();
 <p>{{ me.room.description }}
 </p><p>
 {% for it in me.room.item_set.all %}
+{% if it not in me.item_set.all %}
 <a href="javascript:DoAction('take', {{ it.id }});">{{ it.inroom_description }}</a>
+{% endif %}
 {% endfor %}
 </p>
 <p>
@@ -47,7 +49,7 @@ frm.submit();
 <b><font color="red">There are no exits.</font></b>
 {% endfor %}
 </p>
-<p> You are carying:
+<p> You are carrying:
 <ul>
 {% for it in me.items.all %}
 <li><a href="javascript:DoAction('use', {{ it.id }});">{{ it.name }}</a></li>

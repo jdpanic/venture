@@ -87,10 +87,13 @@ def main(request):
 def quit(request):
  if 'p_id' in request.session:
   me = Person.objects.get(pk=request.session['p_id'])
-  me.alive = False
-  me.save()
+  # me.alive = False
+  # me.save()
  
  request.session['p_id'] = '0'
- auth.logout(request)
  return render_to_response("venture/quit.html")
+ 
+def logout(request):
+ auth.logout(request)
+ return HttpResponseRedirect(reverse('venture.views.main'))
  

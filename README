@@ -19,3 +19,6 @@ urlpatterns = pattern(
 TODO:
 - Get quests working
 - Person._checkquests and Person.take(item) both return potentially giant concatinated strings. Maybe move this to the view or template layer.
+KEVIN, DAN - Build games with the engine to get the process down. Later this week we will work on the story. To save a story, use the following command:
+From the project directory (not the venture directory) type
+python manage.py dumpdata venture > venture/fixtures/mygame.json
