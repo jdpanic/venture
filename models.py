@@ -102,7 +102,7 @@ class Item(models.Model):
  """
  Defines item attributes.
  """
- #FLAG_DAN could we implement logic that allows some items to alter the player's attributes?
+ #FLAG-DAN could we implement logic that allows some items to alter the player's attributes?
  # This would require modifying the player class - possibly adding some characteristics (hats?)
  name = models.CharField(max_length=50, unique=True) # Item name
  description = models.TextField(blank=True, null=True, help_text="Description as seen in person's inventory.")

@@ -1,63 +1,59 @@
 <html>
-<head>
-<Title>Venture</title>
-<script type="text/javascript">
-<!--
-function DoAction(act, what) {
-frm = document.mainform;
-frm.do_what.value = act;
-frm.on_what.value = what;
-frm.submit();
-}
-
-//-->
-</script>
-</head>
-<body>
-<form action="/action/" method="post" id="mainform" name="mainform">
-{% csrf_token %}
-<input type="hidden" id="do_what" name="do_what" />
-<input type="hidden" id="on_what" name="on_what" />
-{% for message in messages %}
-<h1>{{ message }}</h1>
-{% empty %}
-<h1>Welcome to Venture.</h1>
-{% endfor %}
-<h2>You are in {{me.room.name}}.</h2>
-<p>{{ me.room.description }}
-</p><p>
-{% for it in me.room.item_set.all %}
-{% if it not in me.item_set.all %}
-<a href="javascript:DoAction('take', {{ it.id }});">{{ it.inroom_description }}</a>
-{% endif %}
-{% endfor %}
-</p>
-<p>
-{% for p in me.room.person_set.all %}
-{% if p.alive %}
-{% if p != me %}
-{{ p.name }} is here.
-{% endif %}
-{% else %}
-<a href="javascript:DoAction('scan', {{ p.id }});">{{ p.name }}'s corpse is here.</a>
-{% endif %}
-{% endfor %}
-</p><p>
-{% for ex in me.room.exit.all %}
-<a href="javascript:DoAction('go', {{ ex.id }});">{{ ex.description }}</a>
-{% empty %}
-<b><font color="red">There are no exits.</font></b>
-{% endfor %}
-</p>
-<p> You are carrying:
-<ul>
-{% for it in me.items.all %}
-<li><a href="javascript:DoAction('use', {{ it.id }});">{{ it.name }}</a></li>
-{% empty %}
-Nothing.
-{% endfor %}
-</ul>
-</p></form>
-<h6> {{ me.name }}: <a href="/quests/">Quest</a> | <a href="/quit/">Quit</a> | <a href="/logout/">Logout</a></h6>
-</body>
+ <head>
+  <Title>Venture</title>
+  <script type="text/javascript">
+   <!--
+   function DoAction(act, what) {
+   frm = document.mainform;
+   frm.do_what.value = act;
+   frm.on_what.value = what;
+   frm.submit();
+   } //-->
+  </script>
+ </head>
+ <body>
+  <form action="/action/" method="post" id="mainform" name="mainform">
+  {% csrf_token %}
+  <input type="hidden" id="do_what" name="do_what" />
+  <input type="hidden" id="on_what" name="on_what" />
+  {% for message in messages %}
+   <h1>{{ message }}</h1>
+   {% empty %}
+   <h1>Welcome to Venture.</h1>
+  {% endfor %}
+  <h2>You are in {{me.room.name}}.</h2>
+  <p>{{ me.room.description }}
+  </p><p>
+  {% for it in me.room.item_set.all %}
+   {% if it not in me.item_set.all %}
+    <a href="javascript:DoAction('take', {{ it.id }});">{{ it.inroom_description }}</a>
+   {% endif %}
+  {% endfor %}
+  </p><p>
+  {% for p in me.room.person_set.all %}
+   {% if p.alive %}
+    {% if p != me %}
+     {{ p.name }} is here.
+    {% endif %}
+   {% else %}
+    <a href="javascript:DoAction('scan', {{ p.id }});">{{ p.name }}'s corpse is here.</a>
+   {% endif %}
+  {% endfor %}
+  </p><p>
+  {% for ex in me.room.exit.all %}
+   <a href="javascript:DoAction('go', {{ ex.id }});">{{ ex.description }}</a>
+   {% empty %}
+   <b><font color="red">There are no exits.</font></b>
+  {% endfor %}
+  </p><p> You are carrying:
+  <ul>
+  {% for it in me.items.all %}
+   <li><a href="javascript:DoAction('use', {{ it.id }});">{{ it.name }}</a></li>
+   {% empty %}
+   Nothing.
+  {% endfor %}
+  </ul>
+  </p></form>
+ <h6> {{ me.name }}: <a href="/quests/">Quest</a> | <a href="/quit/">Quit</a> | <a href="/logout/">Logout</a></h6>
+ </body>
 </html>
