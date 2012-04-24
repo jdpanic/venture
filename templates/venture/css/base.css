@@ -4,12 +4,17 @@ body {
 }
 
 h1 {
-	margin:20px;
+	margin-top:0px;
+	margin-bottom:0px;
+	margin-left:20px;
+	margin-right:20px;
+	font-size:100px;
+	font-family: notalot35Regular;
 }
 
 h2 {
 	font-family: notalot35Regular;
-	font-size:64px;
+	font-size:80px;
 	color: #191970;
 	margin:0px;
 	padding:0px;
