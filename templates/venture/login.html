@@ -1,15 +1,27 @@
 <html>
 <head>
-<title>Who are you?</title>
+	<title>Who are you?</title>
+	<link rel="stylesheet" type="text/css" href="css/base.css" />
+	<link rel="stylesheet" type="text/css" href="fonts/font.css" />
 </head>
 <body>
-<form action="/login/" method="POST">
-{% csrf_token %}
-<label for="username">Username:</label>
-<input type="text" id="username" name="username" value="" />
-<label for="pwd">Password:</label>
-<input type="password" id="pwd" name="pwd" />
-<input type="submit" />
-</form>
+	<div class="banner">
+		<h1>Venture</h1>
+	</div>
+	<div class="form">
+		<h2>Login</h2>
+		<form action="/login/" method="POST">
+		{% csrf_token %}
+		<div class="line">
+			<label for="username">Username:</label>
+			<input type="text" id="username" name="username" value="" autofocus />
+		</div>
+		<div class="line">
+			<label for="pwd">Password:</label>
+			<input type="password" id="pwd" name="pwd" />
+		</div>
+		<div class="line"><input type="submit" /></div>
+		</form>
+	</div>
 </body>
 </html>
