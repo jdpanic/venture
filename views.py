@@ -17,7 +17,7 @@ def login(request):
    else:
     return render_to_response('venture/banned.html')
   else:
-   messages.warning(request, "The username/password combination  is invalid.")
+   messages.warning(request, "The username/password combination is invalid.")
    return HttpResponseRedirect(reverse('venture.views.login'))
  
  return render_to_response('venture/login.html', context_instance=RequestContext(request))
