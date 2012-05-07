@@ -1,8 +1,14 @@
 <html>
  <head>
   <title>Character Select</title>
+  <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}venture/css/base.css" />
+	<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}venture/fonts/stylesheet.css" />
  </head>
  <body>
+ <div class="banner">
+		<h1>Venture</h1>
+	</div>
+	<div class="form">
   <form name="chooseform" id="chooseform" action="/choose/" method="POST">
    {% csrf_token %}
    {% if user.person_set %}
@@ -14,11 +20,12 @@
       {% endfor %}
      </select>
    {% endif %}
-   <h1>Create a New Character</h1>
+   <h3>Create a New Character</h3>
    <p>
    <label for="name">Character Name:</label>
    <input type="text" name="name" id="name" value="" />
    <input type="submit" value="Start Game" />
   </form>
+  </div>
  </body>
 </html>
