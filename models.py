@@ -9,7 +9,7 @@ class Person(models.Model):
  name = models.CharField(max_length=50, unique=True)
  user = models.ForeignKey(User, null=True) # If it's null this person is an NPC
  alive = models.BooleanField(default=True) # alive on creation
- room = models.ForeignKey('Room', blank=True) # where am i?
+ room = models.ForeignKey('Room', null=True, blank=True) # where am i?
  money = models.IntegerField(default=0) # in-game currency
  items = models.ManyToManyField('Item', blank=True)
  quests = models.ManyToManyField('Quest', blank=True) # Each person can be on many quests at once
@@ -36,9 +36,6 @@ class Person(models.Model):
    return message
   
   else:
-  # FLAG-DAN Consider returning a string stating that this item couldn't be taken
-   # and possibly raising a flag to alert the admin of an error in the case that
-   # the item isn't in this room (this implies that an item is visible when it shouldn't be)
    return "You can't carry that."
  
  def _checkquests(self):
@@ -92,9 +89,9 @@ class Exit(models.Model):
  locked = models.BooleanField(default=False)
  key_item = models.ForeignKey('Item', null=True, help_text="If locked is True, the player needs this item to get through the exit.", blank=True)
  
- #FLAG-DAN consider having a short name variable that we can replace 'door' with
- transition_message = models.TextField( blank=True, help_text="Descriptive message i.e. you step through the door.") 
- 
+ transition_message = models.TextField( blank=True, help_text="Descriptive message i.e. you step through the door.")
+ locked_description = models.TextField(blank=True, help_text="Description the user sees when this exit is locked.")
+ unlock_message = models.TextField(blank=True, help_text="This message shows up when the exit is unlocked with the proper key.")
  def __unicode__(self):
   return "from " + self.from_room.name + " to " + self.to_room.name
 
