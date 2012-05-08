@@ -31,6 +31,7 @@ def new_person(request):
   if form.is_valid():
    me = form.save()
    me.room = Room.objects.get(pk=1)
+   me.user = request.user
    me.save()
    request.session['p_id'] = me.id
    request.session.set_expiry(0) # expires when the browser closes
@@ -48,10 +49,8 @@ def choose(request, pid=None):
   except Person.DoesNotExist:
    return render_to_response('venture/choose.html')
 
-  request.session['p_id'] = me.id
-  return render_to_response('venture/game.html', {'me': me})
- else:
-  return render_to_response('venture/choose.html')
+ request.session['p_id'] = me.id
+ return render_to_response('venture/game.html', {'me': me})
 
 @login_required
 def game(request):
@@ -117,6 +116,7 @@ def reset(request):
  for ex in exits:
   if ex.key_item != fake:
    ex.locked = True
+   ex.save()
 
  return HttpResponseRedirect(reverse('venture.views.main'))
 
