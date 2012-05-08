@@ -8,7 +8,7 @@
  <div class="banner">
 		<h1>Venture</h1>
 	</div>
-	<div class="form"
+	<div class="form">
    {% if user.person_set %}
     <h2>Choose Your Character:</h2>
      <ul>
@@ -16,7 +16,9 @@
        <li><a href="/person/{{ char.id }}">{{ char.name }}, in {{ char.room.name }}</a></li>
       {% endfor %}
   {% endif %}
- <a href="/person/new/">New Character</a>
+  <p>
+	<a href="/person/new/">New Character</a>
+</p>
  </div>
  </body>
 </html>

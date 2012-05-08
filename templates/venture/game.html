@@ -34,7 +34,7 @@
 		<p>{{ me.room.description }}
 		</p><p>
 		{% for it in me.room.item_set.all %}
-			{% if it not in me.item_set.all %}
+			{% if not it in me.item_set.all %}
 				<a href="javascript:DoAction('take', {{ it.id }});">{{ it.inroom_description }}</a>
 			{% endif %}
 	{% endfor %}
