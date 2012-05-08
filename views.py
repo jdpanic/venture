@@ -117,6 +117,7 @@ def reset(request):
  for ex in exits:
   if ex.key_item != fake:
    ex.locked = True
+   ex.save()
 
  return HttpResponseRedirect(reverse('venture.views.main'))
 
