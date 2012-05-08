@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
 from venture.models import Item, Room, Person, Exit, Quest
+from venture.forms import PersonForm
 from django.template import RequestContext
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
@@ -23,25 +24,35 @@ def login(request):
  return render_to_response('venture/login.html', context_instance=RequestContext(request))
 
 @login_required
-def choose(request):
+def new_person(request):
+ title = "Create a New Character"
  if request.POST:
-  if 'pid' in request.POST:
-   me = Person.objects.get(pk=request.POST['pid'])
-  elif 'name' in request.POST:
-   me = Person()
-   me.name = request.POST['name']
-   me.room = Room.objects.get(name='Home Room') # ghetto
-   me.user = request.user
-   me.money = 500
-  
-  me.alive = True
-  me.save()
+  form = PersonForm(request.POST)
+  if form.is_valid():
+   me = form.save()
+   me.room = Room.objects.get(pk=1)
+   me.save()
+   request.session['p_id'] = me.id
+   request.session.set_expiry(0) # expires when the browser closes
+   return render_to_response('venture/game.html', {'me': me}, context_instance=RequestContext(request))
+  else:
+   return render_to_response('venture/form.html', {'title': title, 'form': form}, context_instance=RequestContext(request))
+
+ form = PersonForm()
+ return render_to_response('venture/form.html', {'title': title, 'form': form}, context_instance=RequestContext(request))
+
+def choose(request, pid=None):
+ if pid:
+  try:
+   me = Person.objects.get(pk=pid)
+  except Person.DoesNotExist:
+   return render_to_response('venture/choose.html')
+
   request.session['p_id'] = me.id
-  request.session.set_expiry(0) # expires when the browser closes
-  return render_to_response('venture/game.html', {'me': me}, context_instance=RequestContext(request))
- 
- return render_to_response('venture/choose.html', context_instance=RequestContext(request))
- 
+  return render_to_response('venture/game.html', {'me': me})
+ else:
+  return render_to_response('venture/choose.html')
+
 @login_required
 def game(request):
  try:
@@ -78,22 +89,34 @@ def action(request):
    messages.success(request, q.description)
   else:
    messages.warning(request, "You can't afford that quest.")
- 
+ elif act == "use":
+  exits = Exit.objects.filter(from_room=me.room)
+  it = Item.objects.get(pk=request.POST['on_what'])
+  for ex in exits:
+   if ex.locked and ex.key_item == it:
+    messages.success(request, ex.unlock_message)
+    ex.locked = False
+    ex.save() # Just in case
+
  return HttpResponseRedirect(reverse('venture.views.game'))
 
 def main(request):
  return render_to_response("venture/login.html", context_instance=RequestContext(request))
  
 def quit(request):
- if 'p_id' in request.session:
-  me = Person.objects.get(pk=request.session['p_id'])
-  # me.alive = False
-  # me.save()
- 
  request.session['p_id'] = '0'
- return render_to_response("venture/quit.html")
+ return HttpResponseRedirect(reverse('venture.views.choose'))
  
 def logout(request):
  auth.logout(request)
- return HttpResponseRedirect(reverse('venture.views.main'))
+ return HttpResponseRedirect(reverse('venture.views.login'))
  
+def reset(request):
+ exits = Exit.objects.all()
+ fake = Item.objects.get(name="Fake Item")
+ for ex in exits:
+  if ex.key_item != fake:
+   ex.locked = True
+
+ return HttpResponseRedirect(reverse('venture.views.main'))
+
