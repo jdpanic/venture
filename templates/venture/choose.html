@@ -1,15 +1,22 @@
 <html>
  <head>
   <title>Character Select</title>
+  <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}venture/css/base.css" />
+	<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}venture/fonts/stylesheet.css" />
  </head>
  <body>
+ <div class="banner">
+		<h1>Venture</h1>
+	</div>
+	<div class="form"
    {% if user.person_set %}
-    <h1>Choose Your Character:</h1>
+    <h2>Choose Your Character:</h2>
      <ul>
       {% for char in user.person_set.all %}
        <li><a href="/person/{{ char.id }}">{{ char.name }}, in {{ char.room.name }}</a></li>
       {% endfor %}
   {% endif %}
  <a href="/person/new/">New Character</a>
+ </div>
  </body>
 </html>

@@ -1,66 +1,77 @@
 <html>
  <head>
-  <Title>Venture</title>
-  <script type="text/javascript">
-   <!--
-   function DoAction(act, what) {
-   frm = document.mainform;
-   frm.do_what.value = act;
-   frm.on_what.value = what;
-   frm.submit();
-   } //-->
-  </script>
+	<Title>Venture</title>
+	<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}venture/css/base.css" />
+	<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}venture/fonts/stylesheet.css" />
+	<script type="text/javascript">
+	<!--
+	function DoAction(act, what) {
+	frm = document.mainform;
+	frm.do_what.value = act;
+	frm.on_what.value = what;
+	frm.submit();
+	} //-->
+	</script>
  </head>
  <body>
-  <form action="/action/" method="post" id="mainform" name="mainform">
-  {% csrf_token %}
-  <input type="hidden" id="do_what" name="do_what" />
-  <input type="hidden" id="on_what" name="on_what" />
-  {% for message in messages %}
-   <h1>{{ message }}</h1>
-   {% empty %}
-   <h1>Welcome to Venture.</h1>
-  {% endfor %}
-  <h2>You are in {{me.room.name}}.</h2>
-  <p>{{ me.room.description }}
-  </p><p>
-  {% for it in me.room.item_set.all %}
-   {% if not it in me.item_set.all %}
-    <a href="javascript:DoAction('take', {{ it.id }});">{{ it.inroom_description }}</a>
-   {% endif %}
-  {% endfor %}
-  </p><p>
-  {% for p in me.room.person_set.all %}
-   {% if p.alive %}
-    {% if p != me %}
-     {{ p.name }} is here.
-    {% endif %}
-   {% else %}
-    <a href="javascript:DoAction('scan', {{ p.id }});">{{ p.name }}'s corpse is here.</a>
-   {% endif %}
-  {% endfor %}
-  </p><p>
-  {% for ex in me.room.exit.all %}
-   <a href="javascript:DoAction('go', {{ ex.id }});">
-   {% if ex.locked %}
-    {{ ex.locked_description }}
-   {% else %}
-    {{ ex.description }}
-   {% endif %}
-   </a>
-   {% empty %}
-   <em>There are no exits.</em>
-  {% endfor %}
-  </p><p> You are carrying:
-  <ul>
-  {% for it in me.items.all %}
-   <li><a href="javascript:DoAction('use', {{ it.id }});">{{ it.name }}</a></li>
-   {% empty %}
-   Nothing.
-  {% endfor %}
-  </ul>
-  </p></form>
-  <!--FLAG-DAN Quit and Logout should be consolidated. -->
- <h6> {{ me.name }}: <a href="/quests/">Quest</a> | <a href="/quit/">Quit</a> | <a href="/logout/">Logout</a></h6>
+	<div class="banner">
+		<h1>Venture</h1>
+	</div>
+	<form action="/action/" method="post" id="mainform" name="mainform">
+		{% csrf_token %}
+			<input type="hidden" id="do_what" name="do_what" />
+			<input type="hidden" id="on_what" name="on_what" />
+			<div class="messages">
+			{% for message in messages %}
+				<p><b>Note:</b></p>
+				<h1>{{ message }}</h1>
+			{% empty %}
+				<h1>Welcome to Venture.</h1>
+			{% endfor %}
+		</div>
+		<div class="main">
+		<h3>You are in {{me.room.name}}.</h3>
+		<p>{{ me.room.description }}
+		</p><p>
+		{% for it in me.room.item_set.all %}
+			{% if it not in me.item_set.all %}
+				<a href="javascript:DoAction('take', {{ it.id }});">{{ it.inroom_description }}</a>
+			{% endif %}
+	{% endfor %}
+		</p><p>
+			{% for p in me.room.person_set.all %}
+				{% if p.alive %}
+					{% if p != me %}
+						{{ p.name }} is here.
+					{% endif %}
+				{% else %}
+					<a href="javascript:DoAction('scan', {{ p.id }});">{{ p.name }}'s corpse is here.</a>
+				{% endif %}
+			{% endfor %}
+		</p><div class="exits">
+		<ul>
+		{% for ex in me.room.exit.all %}
+			<li><a href="javascript:DoAction('go', {{ ex.id }});">{{ ex.description }}</a></li>
+		{% empty %}
+			<li><b>There are no exits.</b></li>
+		{% endfor %}
+		</ul>
+		</div>
+	</div>
+	<div class="inventory">
+		<p> <h1>You are carrying:</h1>
+		<ul>
+		{% for it in me.items.all %}
+			<li><a href="javascript:DoAction('use', {{ it.id }});">{{ it.name }}</a></li>
+		{% empty %}
+			Nothing.
+		{% endfor %}
+		</ul>
+		</p>
+	</div>
+	</form>
+	<div class="options">
+		<h6> {{ me.name }}: <a href="/quests/">Quest</a> | <a href="/quit/">Quit</a> | <a href="/logout/">Logout</a></h6>
+	</div>
  </body>
 </html>

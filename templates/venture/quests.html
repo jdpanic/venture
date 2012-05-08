@@ -2,8 +2,15 @@
 <html>
  <head>
   <title>Quest Select</title>
+	<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}venture/css/base.css" />
+	<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}venture/fonts/stylesheet.css" />
  </head>
  <body>
+ <div class="banner">
+		<h1>Venture</h1>
+	</div>
+	<div class="form">
+	<h2>Quests</h2>
   <form name="questform" id="questform" action="/action/" method="POST">
    {% csrf_token %}
    <input type="hidden" id="do_what" name="do_what" value="quest" />
@@ -15,5 +22,6 @@
    </select>
   <input type="submit" />
   </form>
+  </div>
  </body>
 </html>
