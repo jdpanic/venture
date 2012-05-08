@@ -47,10 +47,12 @@ def choose(request, pid=None):
   try:
    me = Person.objects.get(pk=pid)
   except Person.DoesNotExist:
-   return render_to_response('venture/choose.html')
+   return render_to_response('venture/choose.html', context_instance=RequestContext(request))
 
- request.session['p_id'] = me.id
- return render_to_response('venture/game.html', {'me': me})
+  request.session['p_id'] = me.id
+  return render_to_response('venture/game.html', {'me': me}, context_instance=RequestContext(request))
+ else:
+  return render_to_response('venture/choose.html', context_instance=RequestContext(request))
 
 @login_required
 def game(request):
