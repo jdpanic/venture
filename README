@@ -9,6 +9,7 @@ Installation instructions:
 - Run ./manage.py  syncdb and ./manage.py migrate
 - Add venture.urls to your project urlconf. This is the urlpatterns tuple in your urls.py file. The line should look like:
 from django.conf.urls.defaults import patterns, include, url
+You will have to ./manage.py loaddata map.json to get the game map in the db.
 
 urlpatterns = pattern(
     # ...
