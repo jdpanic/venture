@@ -25,7 +25,7 @@
   <p>{{ me.room.description }}
   </p><p>
   {% for it in me.room.item_set.all %}
-   {% if it not in me.item_set.all %}
+   {% if not it in me.item_set.all %}
     <a href="javascript:DoAction('take', {{ it.id }});">{{ it.inroom_description }}</a>
    {% endif %}
   {% endfor %}
@@ -41,9 +41,15 @@
   {% endfor %}
   </p><p>
   {% for ex in me.room.exit.all %}
-   <a href="javascript:DoAction('go', {{ ex.id }});">{{ ex.description }}</a>
+   <a href="javascript:DoAction('go', {{ ex.id }});">
+   {% if ex.locked %}
+    {{ ex.locked_description }}
+   {% else %}
+    {{ ex.description }}
+   {% endif %}
+   </a>
    {% empty %}
-   <b><font color="red">There are no exits.</font></b>
+   <em>There are no exits.</em>
   {% endfor %}
   </p><p> You are carrying:
   <ul>
@@ -54,6 +60,7 @@
   {% endfor %}
   </ul>
   </p></form>
+  <!--FLAG-DAN Quit and Logout should be consolidated. -->
  <h6> {{ me.name }}: <a href="/quests/">Quest</a> | <a href="/quit/">Quit</a> | <a href="/logout/">Logout</a></h6>
  </body>
 </html>

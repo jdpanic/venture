@@ -3,22 +3,13 @@
   <title>Character Select</title>
  </head>
  <body>
-  <form name="chooseform" id="chooseform" action="/choose/" method="POST">
-   {% csrf_token %}
    {% if user.person_set %}
-    <p>
-     <label for="charselect">Choose your Character:</label>
-     <select name="pid" id="pid">
+    <h1>Choose Your Character:</h1>
+     <ul>
       {% for char in user.person_set.all %}
-       <option value="{{ char.id }}">{{ char.name }}</option>
+       <li><a href="/person/{{ char.id }}">{{ char.name }}, in {{ char.room.name }}</a></li>
       {% endfor %}
-     </select>
-   {% endif %}
-   <h1>Create a New Character</h1>
-   <p>
-   <label for="name">Character Name:</label>
-   <input type="text" name="name" id="name" value="" />
-   <input type="submit" value="Start Game" />
-  </form>
+  {% endif %}
+ <a href="/person/new/">New Character</a>
  </body>
 </html>
